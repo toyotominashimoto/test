@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\View;
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -44,5 +44,8 @@ class User extends Authenticatable
     public function contact()
     {
         return $this->hasOne(Contact::class);
+    }
+    public function views(){
+        return $this->hasMany(View::class);
     }
 }
