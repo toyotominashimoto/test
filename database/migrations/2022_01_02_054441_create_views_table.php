@@ -17,6 +17,7 @@ class CreateViewsTable extends Migration
             $table->id();
             $table()->integer("user_id");
             $table->timestamps();
+            $table->text('message_text');
             $table->string('name')->unique();
         });
     }

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Jobs\QueueSenderEmail;
 use App\Models\Contact;
 use App\Models\Record;
 use App\Models\View;
@@ -20,19 +20,30 @@ class MailsController extends Controller
         }
         $contacts = [];
         foreach ($ids as $id) {
-            $contacts[] = Contact::where('id', $id);
+            $contacts[] = Contact::where('id', $id)->get();
         }
         foreach ($contacts as $contact) {
-            Mail::send("emailviews." . $viewModel, $contact->toArray(),
-                function ($message) {
-                    $message->to($contact->email)
-                        ->subject($viewModel . " from " . env('APP_NAME'));
-                });
+            $qs = new QueueSenderEmail(
+                $viewModel,
+                $request->input('data.message');
+                $contact->email;
+                $contact;
+            );
+            $this->dispatch($qs); 
             $record = new Record;
             $record->name = $contact->name;
             $record->email = $contact->email;
             $record->viewname = $viewModel;
             $record->save();
-        }
+            return response()->json(['msg' => 'mail sent to contacts',
+                'contacts' => $contacts]);
+        }        
+    }
+    public function send($message) {
+        $qs = new QueueSenderEmail($message);
+        $this->dispatch($qs);        
+        return redirect()
+                ->back()
+                ->with('mess', "Сообщение $message отправлено");
     }
 }

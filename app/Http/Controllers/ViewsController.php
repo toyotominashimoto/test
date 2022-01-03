@@ -15,6 +15,7 @@ class ViewsController extends Controller
         $view = new View;
         $view->name = $json['name'];
         $view->user_id = $user->id;
+        $view->message_text = $json['content'];
         $view->save();
         Storage::put('emailviews/' . $json['name'], $json['content']);
     }
@@ -24,6 +25,7 @@ class ViewsController extends Controller
         $oldView = View::find($json['id']);
         $view = View::find($json['id']);
         $view->name = $json['name'] ? $json['name'] : $oldView->name;
+        $view->message_text = $json['content'] ? $json['content'] : $oldView->message_text;
         Storage::put('emailviews/' . $json['name'], $json['content']);
         $view->save();
     }
@@ -34,7 +36,11 @@ class ViewsController extends Controller
         $views = View::where('user_id', $user->id);
         $viewsList = [];
         foreach ($views as $view) {
-            $viewsList[] = Storage::get('emailviews/' . $view->name);
+            $viewsList[] = [
+                $view->id,
+                Storage::get('emailviews/' . $view->name),
+                $view->message_text,
+            ];
         }
         return response()->json($viewsList);
     }
