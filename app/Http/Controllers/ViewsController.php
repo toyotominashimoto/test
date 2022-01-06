@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\Storage;
 class ViewsController extends Controller
 {
     public function create(Request $request)
-    {
+    {        
         $user = auth()->user();
+        $validated = $request->validate([
+            "view" => "required|string",
+            "content" => "required|string"
+        ]);
         $json = $request->json();
         $view = new View;
         $view->name = $json['name'];
@@ -21,6 +25,10 @@ class ViewsController extends Controller
     }
     public function update(Request $request)
     {
+        $validated = $request->validate([
+            "name" => "required|string",
+            "content" => "required|string"
+        ]);
         $json = $request->json();
         $oldView = View::find($json['id']);
         $view = View::find($json['id']);

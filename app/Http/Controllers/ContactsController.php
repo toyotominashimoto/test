@@ -9,6 +9,11 @@ class ContactsController extends Controller
 {
     public function create(Request $request)
     {
+        $validated = $request->validate([
+            "name" => "required|string|max:50",
+            "email" => "required|string|unique:users",
+            "surname" => "required|string|",
+        ]);
         $json = $request->json();
         $contact = new Contact;
         $contact->name = $json['name'];
@@ -20,6 +25,11 @@ class ContactsController extends Controller
     }
     public function update(Request $request)
     {
+        $validated = $request->validate([
+            "name" => "required|string|max:50",
+            "email" => "required|string|unique:users",
+            "surname" => "required|string|",
+        ]);
         $json = $request->json();
         $oldContact = Contact::find($json->id);
         $contact = Contact::find($json->id);

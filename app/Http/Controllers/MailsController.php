@@ -12,6 +12,10 @@ class MailsController extends Controller
 {
     public function send(Request $request)
     {
+        $validated = $request->validate([
+            "user.ids" => "array",
+            "view" => "required|string"
+        ]);
         $ids = $request->input("user.ids");
         $view = $request->input('view');
         $viewModel = View::where('name', $view)->get();
@@ -25,9 +29,9 @@ class MailsController extends Controller
         foreach ($contacts as $contact) {
             $qs = new QueueSenderEmail(
                 $viewModel,
-                $request->input('data.message');
-                $contact->email;
-                $contact;
+                $request->input('data.message'),
+                $contact->email,
+                $contact
             );
             $this->dispatch($qs); 
             $record = new Record;
@@ -39,11 +43,11 @@ class MailsController extends Controller
                 'contacts' => $contacts]);
         }        
     }
-    public function send($message) {
-        $qs = new QueueSenderEmail($message);
-        $this->dispatch($qs);        
-        return redirect()
-                ->back()
-                ->with('mess', "Сообщение $message отправлено");
-    }
+    // public function send($message) {
+    //     $qs = new QueueSenderEmail($message);
+    //     $this->dispatch($qs);        
+    //     return redirect()
+    //             ->back()
+    //             ->with('mess', "Сообщение $message отправлено");
+    // }
 }
